@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Épure — Politique de Confidentialité</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --black-soft: #111111;
+            --black-card: #161616;
+            --grey-900: #1a1a1a;
+            --grey-800: #2a2a2a;
+            --grey-700: #3a3a3a;
+            --grey-600: #4a4a4a;
+            --grey-500: #6a6a6a;
+            --grey-400: #8a8a8a;
+            --grey-300: #aaaaaa;
+            --yellow: #e8b931;
+            --yellow-bright: #f0c940;
+            --yellow-dim: #c49a1a;
+            --yellow-glow: rgba(232, 185, 49, 0.12);
+            --white: #f0f0f0;
+            --white-soft: #d0d0d0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--black);
+            color: var(--white);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ====== HERO ====== */
+        .hero {
+            min-height: 40vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 40px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--yellow-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(3rem, 8vw, 5rem);
+            letter-spacing: -0.04em;
+            line-height: 1;
+            margin-bottom: 16px;
+            position: relative;
+            animation: fadeUp 0.8s ease-out;
+        }
+
+        .accent {
+            color: var(--yellow);
+        }
+
+        .hero-tagline {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: var(--grey-400);
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            margin-bottom: 12px;
+            animation: fadeUp 0.8s ease-out 0.15s both;
+        }
+
+        .hero-page-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            font-weight: 600;
+            color: var(--white-soft);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            animation: fadeUp 0.8s ease-out 0.3s both;
+        }
+
+        .hero-page-title::before,
+        .hero-page-title::after {
+            content: '';
+            display: inline-block;
+            width: 32px;
+            height: 1px;
+            background: var(--grey-700);
+            vertical-align: middle;
+            margin: 0 14px;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.45; }
+            50% { opacity: 1; }
+        }
+
+        .breathe { animation: breathe 4s ease-in-out infinite; }
+
+        /* ====== CONTENT ====== */
+        .page {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 32px 80px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--yellow);
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            color: var(--white);
+        }
+
+        .section p {
+            font-size: 0.88rem;
+            line-height: 1.75;
+            color: var(--grey-300);
+            margin-bottom: 12px;
+        }
+
+        .section ul {
+            list-style: none;
+            margin-bottom: 12px;
+        }
+
+        .section ul li {
+            font-size: 0.88rem;
+            line-height: 1.75;
+            color: var(--grey-300);
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .section ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--yellow-dim);
+        }
+
+        .card {
+            background: var(--black-card);
+            border: 1px solid var(--grey-800);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--yellow);
+            margin-bottom: 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.82rem;
+            color: var(--grey-400);
+            line-height: 1.7;
+        }
+
+        code {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.78rem;
+            color: var(--grey-200);
+            background: var(--grey-900);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .separator {
+            width: 40px;
+            height: 1px;
+            background: var(--grey-700);
+            margin: 48px auto;
+        }
+
+        .update-date {
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--grey-600);
+            letter-spacing: 0.04em;
+            margin-bottom: 40px;
+        }
+
+        /* ====== FOOTER ====== */
+        .page-footer {
+            text-align: center;
+            padding: 40px 0;
+            font-size: 0.68rem;
+            color: var(--grey-600);
+            letter-spacing: 0.04em;
+            border-top: 1px solid var(--grey-800);
+        }
+
+        .page-footer span { color: var(--grey-400); }
+        .page-footer .y { color: var(--yellow); }
+
+        /* ====== RESPONSIVE ====== */
+        @media (max-width: 600px) {
+            .hero { padding: 60px 24px 32px; }
+            .page { padding: 0 20px 60px; }
+            .hero-page-title::before,
+            .hero-page-title::after { width: 20px; margin: 0 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== HERO ====== -->
+    <section class="hero">
+        <div class="hero-logo">
+            <span class="accent">É</span>pure<span class="accent">.</span>
+        </div>
+        <p class="hero-tagline breathe">Un mode pour respirer.</p>
+        <h1 class="hero-page-title">Politique de Confidentialité</h1>
+    </section>
+
+    <!-- ====== CONTENT ====== -->
+    <div class="page">
+
+        <p class="update-date">Dernière mise à jour : février 2026</p>
+
+        <div class="section">
+            <div class="section-label">Engagement</div>
+            <h2 class="section-title">Notre philosophie</h2>
+            <p>Épure est conçue avec un principe fondamental : <strong style="color: var(--white);">vos données restent les vôtres</strong>. L'extension fonctionne entièrement en local sur votre navigateur. Aucune donnée n'est collectée, transmise ou stockée sur un serveur distant.</p>
+            <p>Aucun compte n'est requis. Aucune inscription. Aucun tracking. Aucune analytique.</p>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="section">
+            <div class="section-label">Données</div>
+            <h2 class="section-title">Ce que nous ne collectons pas</h2>
+            <ul>
+                <li>Aucune donnée personnelle (nom, email, profil LinkedIn)</li>
+                <li>Aucun contenu de votre feed LinkedIn</li>
+                <li>Aucune information de navigation ou d'historique</li>
+                <li>Aucune métrique d'utilisation ou télémétrie</li>
+                <li>Aucun cookie tiers ou pixel de suivi</li>
+            </ul>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="section">
+            <div class="section-label">Stockage</div>
+            <h2 class="section-title">Données stockées localement</h2>
+            <p>Épure utilise exclusivement les API de stockage du navigateur pour sauvegarder vos préférences :</p>
+
+            <div class="card">
+                <div class="card-title">chrome.storage.sync</div>
+                <p>Votre configuration : filtres activés, poids, seuils, mode d'affichage, mots-clés personnalisés, liste d'auteurs de confiance. Ces données sont synchronisées entre vos appareils via votre compte Chrome, sans transiter par nos serveurs.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">chrome.storage.local</div>
+                <p>Compteurs de session (nombre de posts filtrés et signalés). Ces données restent strictement sur votre appareil.</p>
+            </div>
+
+            <p>Aucune de ces données ne quitte votre navigateur vers un service tiers.</p>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="section">
+            <div class="section-label">Permissions</div>
+            <h2 class="section-title">Permissions utilisées</h2>
+
+            <div class="card">
+                <div class="card-title">Accès à linkedin.com</div>
+                <p>L'extension injecte un script de contenu dans les pages LinkedIn pour analyser le feed et appliquer les traitements visuels (floutage, masquage, mise en avant). L'analyse se fait entièrement côté client, en mémoire. Aucun texte n'est envoyé à un serveur.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">storage</div>
+                <p>Pour sauvegarder votre configuration et vos compteurs localement.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">commands</div>
+                <p>Pour le raccourci clavier <code>Alt+S</code> (Signal Only).</p>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="section">
+            <div class="section-label">Réseau</div>
+            <h2 class="section-title">Communications réseau</h2>
+            <p>Épure n'effectue <strong style="color: var(--white);">aucun appel réseau</strong>. Aucune requête HTTP, aucune API externe, aucun service d'analytique. L'extension fonctionne intégralement hors-ligne une fois installée.</p>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="section">
+            <div class="section-label">Vos droits</div>
+            <h2 class="section-title">Contrôle total</h2>
+            <ul>
+                <li>Exportez votre configuration à tout moment depuis l'onglet Config</li>
+                <li>Réinitialisez tous vos paramètres en un clic</li>
+                <li>Désinstallez l'extension pour supprimer toutes les données associées</li>
+            </ul>
+            <p>Aucune donnée résiduelle ne persiste après la désinstallation.</p>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="section">
+            <div class="section-label">Contact</div>
+            <h2 class="section-title">Questions</h2>
+            <p>Pour toute question relative à cette politique de confidentialité, vous pouvez nous contacter via le dépôt GitHub du projet.</p>
+        </div>
+
+    </div>
+
+    <!-- ====== FOOTER ====== -->
+    <div class="page-footer">
+        
+    </div>
+
+</body>
+</html>
