@@ -1,0 +1,372 @@
+/**
+ * content.css
+ * Styles injectés dans le feed LinkedIn
+ * Visuellement cohérent avec LinkedIn — pas de branding Épure dans le feed
+ * Seule exception : liseré signal 3px jaune doré
+ */
+
+/* ===== MODE BLUR (défaut) ===== */
+.epure-blurred {
+  position: relative !important;
+}
+
+.epure-revealed .epure-blur-overlay {
+  display: none !important;
+}
+
+/* Overlay voile */
+.epure-blur-overlay {
+  contain: layout style;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.90);
+  z-index: 10;
+  cursor: default;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  transition: background 0.3s ease;
+}
+
+.epure-blur-overlay:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.epure-blur-overlay.epure-overlay-dismissed {
+  display: none;
+}
+
+.epure-overlay-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #999;
+  user-select: none;
+  letter-spacing: 0.03em;
+  margin-bottom: 10px;
+}
+
+.epure-overlay-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.epure-btn-show,
+.epure-btn-whitelist {
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  color: #191919;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.epure-btn-show:hover,
+.epure-btn-whitelist:hover {
+  background: #f3f3f3;
+  border-color: #999;
+}
+
+/* ===== MODE MASQUER ===== */
+/* Pattern sr-only : l'élément reste dans le DOM (React/SDUI le rend normalement)
+   mais il est invisible et hors flux. Les warnings BooleanExpression de LinkedIn
+   sont un bug SDUI interne (pas lié à la méthode de masquage). */
+.epure-hidden {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ===== MODE BADGE (bruit) ===== */
+.epure-noise-badge {
+  contain: layout style;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 11px;
+  color: #999;
+  background: #f4f2ee;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  z-index: 5;
+  cursor: default;
+}
+
+/* ===== HIGHLIGHT SIGNAL ===== */
+.epure-signal {
+  border: 2px solid #e8b931 !important;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(232, 185, 49, 0.35), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Micro-badge ✦ en haut à droite */
+.epure-signal-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 14px;
+  color: #666;
+  cursor: default;
+  z-index: 5;
+  line-height: 1;
+}
+
+.epure-signal-badge:hover {
+  color: #333;
+}
+
+/* ===== SCORE INDICATOR (debug) ===== */
+.epure-score-indicator {
+  contain: layout style;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 10px;
+  font-family: monospace;
+  color: #f0f0f0;
+  background: #0a0a0a;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 1px 5px;
+  z-index: 15;
+  cursor: default;
+  line-height: 1.4;
+}
+
+.epure-score-indicator.epure-score-noise {
+  color: #e05555;
+  border-color: #2a2a2a;
+  background: #0a0a0a;
+}
+
+.epure-score-indicator.epure-score-signal {
+  color: #e8b931;
+  border-color: #2a2a2a;
+  background: #0a0a0a;
+}
+
+/* ===== MODE SIGNAL ONLY (masquer) ===== */
+/* Enfants directs du conteneur feed sauf posts signal */
+/* Même pattern sr-only que .epure-hidden */
+.epure-signal-only-feed > [data-epure-processed]:not([data-epure-signal="1"]) {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Position relative pour les posts avec overlays/badges */
+.epure-positioned {
+  position: relative !important;
+}
+
+/* Bandeau unifié Signal Only (fixe en bas) */
+.epure-signal-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #0a0a0a;
+  border-top: 3px solid #e8b931;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 16px 24px;
+  z-index: 9999;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 15px;
+  color: #f0f0f0;
+  animation: epure-bar-in 0.3s ease-out;
+}
+
+.epure-signal-bar .epure-bar-warn {
+  color: #e8b931;
+  font-size: 20px;
+}
+
+.epure-signal-bar .epure-bar-text {
+  color: #8a8a8a;
+  font-size: 15px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+.epure-signal-bar .epure-bar-brand {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #f0f0f0;
+}
+
+.epure-signal-bar .epure-bar-accent {
+  color: #e8b931;
+}
+
+.epure-signal-bar .epure-bar-ratio {
+  color: #e8b931;
+  font-size: 16px;
+  font-weight: 700;
+  transition: transform 0.15s ease;
+}
+
+/* Flash sur le compteur quand il change */
+.epure-signal-bar .epure-bar-ratio.epure-bar-pulse {
+  animation: epure-pulse 0.4s ease-out;
+}
+
+@keyframes epure-pulse {
+  0% { transform: scale(1); color: #e8b931; }
+  40% { transform: scale(1.35); color: #fff; }
+  100% { transform: scale(1); color: #e8b931; }
+}
+
+/* Micro-scale sur le bandeau entier */
+.epure-signal-bar.epure-bar-tick {
+  animation: epure-tick 0.25s ease-out;
+}
+
+@keyframes epure-tick {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+.epure-signal-bar .epure-bar-btn {
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  color: #191919;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.epure-signal-bar .epure-bar-btn:hover {
+  background: #f3f3f3;
+  border-color: #999;
+}
+
+@keyframes epure-bar-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== BANDEAU NOTATION CHROME WEB STORE ===== */
+.epure-rating-banner {
+  /* Toast fixé en haut du viewport : toujours visible peu importe le scroll */
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483647;
+  max-width: 560px;
+  width: calc(100% - 48px);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #0a0a0a;
+  border: 2px solid #e8b931;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(232, 185, 49, 0.15);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  animation: epure-rating-in 0.4s ease-out;
+}
+
+.epure-rating-logo {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #f0f0f0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.epure-rating-accent {
+  color: #e8b931;
+}
+
+.epure-rating-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.epure-rating-text {
+  font-size: 14px;
+  color: #d0d0d0;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.epure-rating-cta {
+  display: inline-block;
+  background: #e8b931;
+  color: #0a0a0a;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 20px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+  align-self: flex-start;
+}
+
+.epure-rating-cta:hover {
+  background: #f0c940;
+  box-shadow: 0 0 12px rgba(232, 185, 49, 0.4);
+}
+
+.epure-rating-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #6a6a6a;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.epure-rating-close:hover {
+  color: #f0f0f0;
+}
+
+@keyframes epure-rating-in {
+  from { opacity: 0; transform: translate(-50%, -20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}

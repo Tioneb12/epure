@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "Épure",
+  "version": "1.0.0",
+  "description": "Un mode pour respirer. Curateur intelligent pour votre feed LinkedIn.",
+  "permissions": ["storage"],
+  "host_permissions": ["*://*.linkedin.com/*"],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [{
+    "matches": ["*://*.linkedin.com/*"],
+    "js": [
+      "content/storage-helpers.js",
+      "content/selectors.js",
+      "content/filters/dictionaries/community-dict.js",
+      "content/filters/dictionaries/generic-content-dict.js",
+      "content/filters/dictionaries/broetry-dict.js",
+      "content/filters/dictionaries/engagement-bait-dict.js",
+      "content/filters/dictionaries/humble-brag-dict.js",
+      "content/filters/dictionaries/promo-dict.js",
+      "content/filters/dictionaries/structural-dict.js",
+      "content/filters/dictionaries/signal-score-dict.js",
+      "content/filters/generic-content.js",
+      "content/filters/broetry.js",
+      "content/filters/engagement-bait.js",
+      "content/filters/humble-brag.js",
+      "content/filters/promo.js",
+      "content/filters/structural.js",
+      "content/filters/signal-score.js",
+      "content/detector.js",
+      "content/highlighter.js",
+      "content/observer.js",
+      "content/content.js"
+    ],
+    "css": ["content/content.css"],
+    "run_at": "document_idle"
+  }],
+  "commands": {
+    "toggle-signal-only": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "Basculer le mode Signal only"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'"
+  }
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="popup.css">
+  <title>Épure</title>
+</head>
+<body>
+  <!-- Header : logo centré + traits + baseline + toggle -->
+  <header class="popup-header">
+    <div class="header-logo-row">
+      <span class="header-trait"></span>
+      <h1 class="logo"><span class="accent">É</span>pure<span class="accent">.</span></h1>
+      <span class="header-trait"></span>
+    </div>
+    <p class="baseline">Et ton feed <span class="breathe">respire</span>.</p>
+    <label class="toggle-switch" title="Activer/Désactiver Épure">
+      <input type="checkbox" id="toggleEnabled" checked>
+      <span class="toggle-slider"></span>
+    </label>
+  </header>
+
+  <!-- Compteurs -->
+  <div class="counters">
+    <span class="counter total-counter" title="Posts analysés"><span id="totalCount">0</span> analysés</span>
+    <span class="counter-sep">&middot;</span>
+    <span class="counter signal-counter" title="Posts signal détectés">&#10022; <span id="signalCount">0</span> signal</span>
+    <span class="counter-sep">&middot;</span>
+    <span class="counter noise-counter" title="Posts masqués"><span id="noiseCount">0</span> masqués</span>
+  </div>
+
+  <!-- Onglets -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="filtres">Filtres</button>
+    <button class="tab" data-tab="bruit">Bruit</button>
+    <button class="tab" data-tab="signal">Signal</button>
+    <button class="tab" data-tab="auteurs">Auteurs</button>
+    <button class="tab" data-tab="config">Config</button>
+  </nav>
+
+  <!-- ===== ONGLET FILTRES ===== -->
+  <section class="tab-content active" id="tab-filtres">
+    <p class="hint slider-legend"><span>0 — ignoré</span><span>100 — filtrage fort</span></p>
+    <div class="filter-list">
+      <div class="filter-row-group">
+        <label class="filter-row">
+          <input type="checkbox" data-filter="genericContent" checked>
+          <span class="filter-name">Contenu générique</span>
+          <span class="weight-value" data-weight-label="genericContent">80%</span>
+        </label>
+        <input type="range" class="filter-weight" data-weight="genericContent" min="0" max="100" value="80" step="5">
+      </div>
+      <div class="filter-row-group">
+        <label class="filter-row">
+          <input type="checkbox" data-filter="broetry" checked>
+          <span class="filter-name">Style haché</span>
+          <span class="weight-value" data-weight-label="broetry">70%</span>
+        </label>
+        <input type="range" class="filter-weight" data-weight="broetry" min="0" max="100" value="70" step="5">
+      </div>
+      <div class="filter-row-group">
+        <label class="filter-row">
+          <input type="checkbox" data-filter="engagementBait" checked>
+          <span class="filter-name">Piège à likes</span>
+          <span class="weight-value" data-weight-label="engagementBait">90%</span>
+        </label>
+        <input type="range" class="filter-weight" data-weight="engagementBait" min="0" max="100" value="90" step="5">
+      </div>
+      <div class="filter-row-group">
+        <label class="filter-row">
+          <input type="checkbox" data-filter="humbleBrag" checked>
+          <span class="filter-name">Fausse modestie</span>
+          <span class="weight-value" data-weight-label="humbleBrag">50%</span>
+        </label>
+        <input type="range" class="filter-weight" data-weight="humbleBrag" min="0" max="100" value="50" step="5">
+      </div>
+      <div class="filter-row-group">
+        <label class="filter-row">
+          <input type="checkbox" data-filter="promo" checked>
+          <span class="filter-name">Promotion</span>
+          <span class="weight-value" data-weight-label="promo">75%</span>
+        </label>
+        <input type="range" class="filter-weight" data-weight="promo" min="0" max="100" value="75" step="5">
+      </div>
+      <div class="filter-row-group">
+        <label class="filter-row">
+          <input type="checkbox" data-filter="structural" checked>
+          <span class="filter-name">Structurel</span>
+          <span class="weight-value" data-weight-label="structural">30%</span>
+        </label>
+        <input type="range" class="filter-weight" data-weight="structural" min="0" max="100" value="30" step="5">
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== ONGLET BRUIT ===== -->
+  <section class="tab-content" id="tab-bruit">
+    <h2 class="section-title">Sensibilité</h2>
+    <p class="hint">Plus le seuil est bas, plus Épure est strict.</p>
+    <div class="slider-row">
+      <input type="range" id="noiseThreshold" min="0" max="100" value="60" step="5">
+      <span id="noiseThresholdLabel" class="slider-value">0.60</span>
+    </div>
+
+    <h2 class="section-title">Mode d'action</h2>
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="blur">Flouter</button>
+      <button class="mode-btn" data-mode="hide">Masquer</button>
+      <button class="mode-btn" data-mode="badge">Badge</button>
+    </div>
+
+    <h2 class="section-title">Mots-clés bruit</h2>
+    <p class="hint">Une expression par ligne</p>
+    <textarea id="noiseKeywords" rows="3" placeholder="hustle culture&#10;grindset&#10;wake up at 5am"></textarea>
+
+    <div class="toggle-row">
+      <label for="filterSponsored">Filtrer les posts sponsorisés</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="filterSponsored">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </section>
+
+  <!-- ===== ONGLET SIGNAL ===== -->
+  <section class="tab-content" id="tab-signal">
+    <label class="filter-row">
+      <input type="checkbox" id="toggleHighlight" checked>
+      <span class="filter-name">Highlight signal</span>
+    </label>
+    <label class="filter-row">
+      <input type="checkbox" id="toggleSignalOnly">
+      <span class="filter-name">Signal only</span>
+      <span class="hotkey-hint" id="hotkeyHint">⌥S</span>
+    </label>
+    <h2 class="section-title" style="margin-top: 10px;">Seuil signal</h2>
+    <p class="hint">Score minimum pour qu'un post soit mis en avant.</p>
+    <div class="slider-row">
+      <input type="range" id="signalThreshold" min="0" max="100" value="70" step="5">
+      <span id="signalThresholdLabel" class="slider-value">0.70</span>
+    </div>
+
+    <h2 class="section-title">Mots-clés signal bonus</h2>
+    <p class="hint">Les posts contenant ces mots auront un bonus signal.</p>
+    <textarea id="signalKeywords" rows="3" placeholder="open source&#10;étude de cas&#10;benchmark"></textarea>
+
+    <div class="toggle-row">
+      <label for="optHotkey">Raccourci <span id="hotkeyLabel">⌥S / Alt+S</span></label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="optHotkey" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </section>
+
+  <!-- ===== ONGLET AUTEURS ===== -->
+  <section class="tab-content" id="tab-auteurs">
+    <p class="hint">Ces auteurs ne seront jamais filtrés et recevront un bonus signal. Ajoutez-les aussi depuis un post flouté sur LinkedIn.</p>
+
+    <h2 class="section-title">Whitelist</h2>
+    <div class="author-list" id="whitelistContainer"></div>
+    <div class="add-author-row">
+      <input type="text" id="whitelistInput" placeholder="/in/nom-profil ou URL">
+      <button id="addWhitelist" class="btn-add">+</button>
+    </div>
+  </section>
+
+  <!-- ===== ONGLET CONFIG ===== -->
+  <section class="tab-content" id="tab-config">
+    <h2 class="section-title">Sauvegarde</h2>
+    <div class="config-actions">
+      <button id="exportConfig" class="btn-action">Exporter</button>
+      <label class="btn-action btn-import">
+        Importer
+        <input type="file" id="importConfig" accept=".json" hidden>
+      </label>
+    </div>
+
+    <h2 class="section-title">Réinitialisation</h2>
+    <div class="config-actions">
+      <button id="resetConfig" class="btn-action btn-danger">Reset config</button>
+      <button id="resetCounters" class="btn-action btn-danger">Reset compteurs</button>
+    </div>
+
+    <h2 class="section-title">Soutien</h2>
+    <div class="config-actions">
+      <a id="rateLink" class="btn-action btn-rate">&#9733; Noter Épure</a>
+    </div>
+
+    <div class="config-info">
+      <p>Version : <strong id="configVersion">1.0.0</strong></p>
+    </div>
+  </section>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

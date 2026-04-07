@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Politique de confidentialité d'Épure, l'extension Chrome qui fait respirer votre feed LinkedIn. Aucune donnée collectée, tout reste local dans votre navigateur.">
-    <title>Épure — Politique de Confidentialité</title>
+    <meta name="description" content="Épure — Extension Chrome qui curate votre feed LinkedIn. Double scoring bruit/signal, 6 filtres intelligents, 100% local, zéro collecte de données. Open source (GPL v3).">
+    <title>Épure — Et ton feed respire.</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            --font-title: "Syne", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            --font-body: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
             --black: #0a0a0a;
             --black-soft: #111111;
             --black-card: #161616;
@@ -22,357 +24,438 @@
             --yellow-bright: #f0c940;
             --yellow-dim: #c49a1a;
             --yellow-glow: rgba(232, 185, 49, 0.12);
+            --yellow-glow-strong: rgba(232, 185, 49, 0.25);
             --white: #f0f0f0;
             --white-soft: #d0d0d0;
+            --red-soft: #e05555;
+            --li-bg: #f4f2ee;
+            --li-card: #ffffff;
+            --li-border: #e0e0e0;
+            --li-text: #191919;
+            --li-text-sec: #666666;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--black); color: var(--white); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
 
-        body {
-            background: var(--black);
-            color: var(--white);
-            font-family: 'Space Grotesk', sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        /* ====== ANIMATIONS ====== */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes breathe { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
 
         /* ====== HERO ====== */
-        .hero {
-            min-height: 40vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 80px 40px 40px;
-            position: relative;
-            overflow: hidden;
-        }
+        .hero { min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 40px 60px; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, var(--yellow-glow) 0%, transparent 70%); pointer-events: none; }
+        .hero-logo { font-family: var(--font-title); font-weight: 800; font-size: clamp(4rem, 10vw, 7rem); letter-spacing: -0.04em; line-height: 1; margin-bottom: 16px; position: relative; animation: fadeUp 0.8s ease-out; }
+        .accent { color: var(--yellow); }
+        .hero-tagline { font-size: clamp(1rem, 2.5vw, 1.3rem); color: var(--grey-400); font-weight: 400; letter-spacing: 0.04em; margin-bottom: 40px; animation: fadeUp 0.8s ease-out 0.15s both; }
+        .breathe { animation: breathe 4s ease-in-out infinite; color: var(--white-soft); text-shadow: 0 0 8px rgba(240, 240, 240, 0.15); }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -200px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, var(--yellow-glow) 0%, transparent 70%);
-            pointer-events: none;
-        }
+        .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.8s ease-out 0.3s both; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 24px; font-family: var(--font-body); font-size: 0.88rem; font-weight: 600; text-decoration: none; transition: background 0.2s, box-shadow 0.2s, transform 0.15s; cursor: pointer; border: none; }
+        .btn-primary { background: var(--yellow); color: var(--black); }
+        .btn-primary:hover { background: var(--yellow-bright); box-shadow: 0 0 20px var(--yellow-glow-strong); transform: translateY(-1px); }
+        .btn-secondary { background: transparent; color: var(--white); border: 1px solid var(--grey-700); }
+        .btn-secondary:hover { border-color: var(--grey-500); background: rgba(255,255,255,0.03); }
 
-        .hero-logo {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: clamp(3rem, 8vw, 5rem);
-            letter-spacing: -0.04em;
-            line-height: 1;
-            margin-bottom: 16px;
-            position: relative;
-            animation: fadeUp 0.8s ease-out;
-        }
+        /* ====== PAGE ====== */
+        .page { max-width: 1000px; margin: 0 auto; padding: 0 32px 80px; }
+        .section { margin-bottom: 80px; }
+        .section-label { font-family: var(--font-title); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: var(--yellow); margin-bottom: 8px; text-align: center; }
+        .section-title { font-family: var(--font-title); font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 32px; color: var(--white); text-align: center; }
+        .section-subtitle { font-size: 0.88rem; color: var(--grey-400); text-align: center; max-width: 600px; margin: -20px auto 36px; line-height: 1.6; }
 
-        .accent {
-            color: var(--yellow);
-        }
+        /* ====== CARDS GRID ====== */
+        .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .cards-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        @media (max-width: 768px) { .cards-3, .cards-2 { grid-template-columns: 1fr; } }
 
-        .hero-tagline {
-            font-size: clamp(0.9rem, 2vw, 1.1rem);
-            color: var(--grey-400);
-            font-weight: 400;
-            letter-spacing: 0.04em;
-            margin-bottom: 12px;
-            animation: fadeUp 0.8s ease-out 0.15s both;
-        }
+        .card { background: var(--black-card); border: 1px solid var(--grey-800); border-radius: 10px; padding: 24px; }
+        .card-icon { font-size: 1.4rem; margin-bottom: 12px; }
+        .card-title { font-family: var(--font-title); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--yellow); margin-bottom: 10px; }
+        .card p, .card li { font-size: 0.82rem; color: var(--grey-300); line-height: 1.7; }
 
-        .hero-page-title {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(1rem, 2.5vw, 1.3rem);
-            font-weight: 600;
-            color: var(--white-soft);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            animation: fadeUp 0.8s ease-out 0.3s both;
-        }
+        /* ====== FILTRES GRID ====== */
+        .filters-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        @media (max-width: 768px) { .filters-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .filters-grid { grid-template-columns: 1fr; } }
 
-        .hero-page-title::before,
-        .hero-page-title::after {
-            content: '';
-            display: inline-block;
-            width: 32px;
-            height: 1px;
-            background: var(--grey-700);
-            vertical-align: middle;
-            margin: 0 14px;
-        }
+        .filter-card { background: var(--black-card); border: 1px solid var(--grey-800); border-radius: 10px; padding: 20px; }
+        .filter-card .filter-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: middle; }
+        .filter-card .filter-name { font-family: var(--font-title); font-size: 0.82rem; font-weight: 700; color: var(--white); }
+        .filter-card .filter-desc { font-size: 0.78rem; color: var(--grey-400); line-height: 1.6; margin-top: 8px; }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* ====== PREVIEW ====== */
+        .preview-grid { display: grid; grid-template-columns: 340px 1fr; gap: 40px; align-items: start; }
+        @media (max-width: 860px) { .preview-grid { grid-template-columns: 1fr; justify-items: center; } }
 
-        @keyframes breathe {
-            0%, 100% { opacity: 0.45; }
-            50% { opacity: 1; }
-        }
+        /* Popup frame — fidèle à popup.html + popup.css */
+        .popup-frame { width: 340px; background: var(--black); border-radius: 12px; border: 1px solid var(--grey-800); overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,0.02), 0 20px 50px rgba(0,0,0,0.5), 0 0 70px var(--yellow-glow); padding: 16px; font-size: 13px; }
 
-        .breathe {
-            animation: breathe 4s ease-in-out infinite;
-            color: var(--white-soft);
-            text-shadow: 0 0 8px rgba(240, 240, 240, 0.15);
-        }
+        /* Header : logo centré entre traits */
+        .popup-header { display: flex; flex-direction: column; align-items: center; padding: 14px 0 10px; }
+        .header-logo-row { display: flex; align-items: center; gap: 14px; width: 100%; }
+        .header-trait { flex: 1; height: 1px; background: var(--grey-700); }
+        .popup-logo { font-family: var(--font-title); font-weight: 800; font-size: 1.65rem; letter-spacing: -0.03em; white-space: nowrap; }
+        .popup-baseline { font-size: 0.72rem; font-style: italic; color: var(--grey-400); margin-top: 5px; letter-spacing: 0.04em; }
+        .toggle-switch { width: 36px; height: 19px; background: var(--yellow); border-radius: 10px; position: relative; margin-top: 8px; }
+        .toggle-switch::after { content: ''; position: absolute; top: 2.5px; left: 20px; width: 14px; height: 14px; background: var(--black); border-radius: 50%; }
 
-        /* ====== CONTENT ====== */
-        .page {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 0 32px 80px;
-        }
+        /* Compteurs inline */
+        .popup-counters { display: flex; align-items: center; gap: 6px; padding: 7px 10px; background: var(--black-card); border-radius: 8px; margin: 8px 0; font-family: var(--font-title); font-size: 0.8rem; font-weight: 600; }
+        .popup-counters .cnt-total { color: var(--white-soft); }
+        .popup-counters .cnt-signal { color: var(--yellow); }
+        .popup-counters .cnt-noise { color: var(--grey-400); }
+        .popup-counters .cnt-sep { color: var(--grey-500); font-size: 0.7rem; }
 
-        .section {
-            margin-bottom: 40px;
-        }
+        /* Onglets */
+        .popup-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--grey-800); margin-bottom: 10px; }
+        .popup-tab { background: none; border: none; color: var(--grey-400); font-family: var(--font-body); font-size: 0.7rem; font-weight: 500; padding: 5px 8px; border-bottom: 2px solid transparent; cursor: default; }
+        .popup-tab.active { color: var(--yellow); border-bottom-color: var(--yellow); }
 
-        .section-label {
-            font-family: 'Syne', sans-serif;
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color: var(--yellow);
-            margin-bottom: 8px;
-        }
+        /* Filtres avec checkbox + slider poids */
+        .popup-filters { display: flex; flex-direction: column; gap: 2px; }
+        .pf-legend { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--grey-500); padding: 0 6px; margin-bottom: 4px; }
+        .pf-group { background: var(--black-card); border-radius: 6px; padding: 2px 0; }
+        .pf-row { display: flex; align-items: center; gap: 7px; padding: 3px 8px; }
+        .pf-check { width: 13px; height: 13px; accent-color: var(--yellow); }
+        .pf-name { font-size: 0.78rem; color: var(--white-soft); flex: 1; }
+        .pf-weight { font-family: var(--font-title); font-size: 0.68rem; font-weight: 600; color: var(--yellow); min-width: 28px; text-align: right; }
+        .pf-slider { display: block; width: calc(100% - 14px); margin: 0 7px 4px; height: 3px; accent-color: var(--yellow); cursor: default; }
 
-        .section-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 16px;
-            color: var(--white);
-        }
+        /* Footer popup */
+        .popup-footer { display: flex; justify-content: space-between; padding: 8px 0 0; margin-top: 8px; border-top: 1px solid var(--grey-800); }
+        .popup-footer span { font-size: 0.62rem; color: var(--grey-500); }
 
-        .section p {
-            font-size: 0.88rem;
-            line-height: 1.75;
-            color: var(--grey-300);
-            margin-bottom: 12px;
-        }
+        /* Feed preview */
+        .feed-area { background: var(--li-bg); border-radius: 11px; padding: 16px; }
+        .feed-posts { display: flex; flex-direction: column; gap: 12px; }
+        .li-post { background: var(--li-card); border: 1px solid var(--li-border); border-radius: 8px; padding: 14px; position: relative; overflow: hidden; font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--li-text); }
+        .li-post-header { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+        .li-avatar { width: 38px; height: 38px; border-radius: 50%; background: #ddd; flex-shrink: 0; }
+        .li-name { font-weight: 600; font-size: 0.8rem; }
+        .li-role { font-size: 0.65rem; color: var(--li-text-sec); }
+        .li-text { font-size: 0.78rem; line-height: 1.55; color: #333; }
+        .li-post.signal { border-left: 3px solid var(--yellow); }
+        .signal-mark { position: absolute; top: 10px; right: 12px; font-size: 0.7rem; color: var(--li-text-sec); cursor: default; }
+        .li-post.blurred .li-text { filter: blur(6px); user-select: none; }
+        .blur-bar { position: absolute; bottom: 0; left: 0; right: 0; padding: 11px 14px; background: linear-gradient(to top, var(--li-card) 50%, transparent); display: flex; align-items: center; justify-content: space-between; }
+        .blur-text { font-size: 0.7rem; color: var(--li-text-sec); }
+        .blur-btns { display: flex; gap: 5px; }
+        .blur-btn { font-size: 0.62rem; padding: 3px 9px; border-radius: 4px; cursor: default; font-family: -apple-system, system-ui, sans-serif; font-weight: 500; border: 1px solid var(--li-border); background: var(--li-card); color: var(--li-text-sec); }
+        .blur-btn.pri { background: var(--li-text); color: var(--li-card); border-color: var(--li-text); }
+        .badge-li { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; background: #f5f5f5; border: 1px solid var(--li-border); border-radius: 3px; font-size: 0.58rem; font-weight: 500; color: var(--li-text-sec); margin-top: 7px; cursor: default; }
 
-        .section ul {
-            list-style: none;
-            margin-bottom: 12px;
-        }
+        /* ====== SEPARATOR ====== */
+        .separator { width: 40px; height: 1px; background: var(--grey-700); margin: 0 auto 80px; }
 
-        .section ul li {
-            font-size: 0.88rem;
-            line-height: 1.75;
-            color: var(--grey-300);
-            padding-left: 20px;
-            position: relative;
-        }
+        /* ====== FINAL CTA ====== */
+        .final-cta { position: relative; text-align: center; padding: 80px 32px; margin: 60px auto 0; max-width: 760px; border-top: 1px solid var(--grey-800); border-bottom: 1px solid var(--grey-800); overflow: hidden; }
+        .final-cta::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; background: radial-gradient(circle, var(--yellow-glow) 0%, transparent 60%); pointer-events: none; }
+        .final-cta-label { position: relative; font-family: var(--font-title); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: var(--yellow); margin-bottom: 12px; }
+        .final-cta-title { position: relative; font-family: var(--font-title); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 14px; color: var(--white); }
+        .final-cta-sub { position: relative; font-size: 0.95rem; color: var(--grey-400); max-width: 480px; margin: 0 auto 32px; line-height: 1.6; }
+        .final-cta-buttons { position: relative; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 
-        .section ul li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 10px;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--yellow-dim);
-        }
-
-        .card {
-            background: var(--black-card);
-            border: 1px solid var(--grey-800);
-            border-radius: 10px;
-            padding: 20px 24px;
-            margin-bottom: 16px;
-        }
-
-        .card-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--yellow);
-            margin-bottom: 10px;
-        }
-
-        .card p, .card li {
-            font-size: 0.82rem;
-            color: var(--grey-300);
-            line-height: 1.7;
-        }
-
-        code {
-            font-family: 'Space Grotesk', monospace;
-            font-size: 0.78rem;
-            color: var(--grey-200);
-            background: var(--grey-900);
-            padding: 1px 6px;
-            border-radius: 4px;
-        }
-
-        .separator {
-            width: 40px;
-            height: 1px;
-            background: var(--grey-700);
-            margin: 48px auto;
-        }
-
-        .update-date {
-            text-align: center;
-            font-size: 0.72rem;
-            color: var(--grey-600);
-            letter-spacing: 0.04em;
-            margin-bottom: 40px;
-        }
+        /* ====== CREDITS ====== */
+        .credits-section { padding: 80px 32px 60px; max-width: 760px; margin: 0 auto; text-align: center; }
+        .credits-label { font-family: var(--font-title); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: var(--yellow); margin-bottom: 10px; }
+        .credits-title { font-family: var(--font-title); font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 700; letter-spacing: -0.02em; color: var(--white); margin-bottom: 10px; }
+        .credits-tagline { font-size: 0.88rem; color: var(--grey-400); max-width: 520px; margin: 0 auto 44px; line-height: 1.7; font-style: italic; }
+        .credits-people { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+        .credit-card { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 28px 32px; background: var(--black-card); border: 1px solid var(--grey-800); border-radius: 14px; text-decoration: none; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; min-width: 220px; }
+        .credit-card:hover { border-color: var(--yellow); transform: translateY(-2px); box-shadow: 0 0 30px var(--yellow-glow); }
+        .credit-avatar-wrap { position: relative; width: 88px; height: 88px; }
+        .credit-avatar { width: 88px; height: 88px; border-radius: 50%; border: 2px solid var(--grey-700); object-fit: cover; transition: border-color 0.2s; background: var(--grey-800); }
+        .credit-card:hover .credit-avatar { border-color: var(--yellow); }
+        .credit-role { font-family: var(--font-title); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--yellow); }
+        .credit-name { font-family: var(--font-title); font-size: 1.1rem; font-weight: 700; color: var(--white); letter-spacing: -0.01em; }
+        .credit-handle { font-size: 0.78rem; color: var(--grey-400); font-family: var(--font-body); }
+        .credits-amp { display: flex; align-items: center; justify-content: center; font-family: var(--font-title); font-size: 1.6rem; font-weight: 400; color: var(--grey-600); font-style: italic; padding: 0 4px; }
+        @media (max-width: 600px) { .credits-amp { display: none; } .credit-card { width: 100%; max-width: 280px; } }
 
         /* ====== FOOTER ====== */
-        .page-footer {
-            text-align: center;
-            padding: 40px 0;
-            font-size: 0.68rem;
-            color: var(--grey-600);
-            letter-spacing: 0.04em;
-            border-top: 1px solid var(--grey-800);
-        }
-
-        .page-footer span { color: var(--grey-400); }
+        .page-footer { text-align: center; padding: 36px 32px; font-size: 0.72rem; color: var(--grey-500); letter-spacing: 0.03em; line-height: 2; border-top: 1px solid var(--grey-800); }
+        .page-footer a { color: var(--grey-400); text-decoration: none; transition: color 0.15s; }
+        .page-footer a:hover { color: var(--yellow); }
         .page-footer .y { color: var(--yellow); }
+        .footer-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
 
         /* ====== RESPONSIVE ====== */
         @media (max-width: 600px) {
-            .hero { padding: 60px 24px 32px; }
+            .hero { padding: 60px 24px 40px; }
             .page { padding: 0 20px 60px; }
-            .hero-page-title::before,
-            .hero-page-title::after { width: 20px; margin: 0 10px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ====== HERO ====== -->
+    <!-- ====== 1. HERO ====== -->
     <section class="hero">
-        <div class="hero-logo">
-            <span class="accent">É</span>pure<span class="accent">.</span>
-        </div>
+        <div class="hero-logo"><span class="accent">É</span>pure<span class="accent">.</span></div>
         <p class="hero-tagline">Et ton feed <span class="breathe">respire</span>.</p>
-        <h1 class="hero-page-title">Politique de Confidentialité</h1>
+        <div class="hero-ctas">
+            <a href="https://chrome.google.com/webstore" class="btn btn-primary">Installer sur Chrome</a>
+            <a href="https://github.com/Tioneb12/epure" class="btn btn-secondary">Voir le code</a>
+        </div>
     </section>
 
-    <!-- ====== CONTENT ====== -->
     <div class="page">
 
-        <p class="update-date">Dernière mise à jour : février 2026</p>
-
-        <div class="card" style="border-color: var(--yellow-dim); padding-left: 0; padding-right: 0;">
-            <div class="card-title" style="padding-left: 24px;">Avertissement</div>
-            <p style="padding: 0 24px;">Épure est un projet personnel, né de la curiosité et de l'envie d'expérimenter. C'est un petit système en JavaScript vanilla, sans prétention. Les suggestions d'amélioration et les signalements de bugs sont les bienvenus, mais c'est un side project — le temps que j'y consacre reste limité. Pas de support dédié, pas de roadmap gravée dans le marbre. Juste un outil fait avec soin, que vous êtes libre d'utiliser tel quel.</p>
-        </div>
-
-        <div class="separator"></div>
-
+        <!-- ====== 2. COMMENT ÇA MARCHE ====== -->
         <div class="section">
-            <div class="section-label">Engagement</div>
-            <h2 class="section-title">Ma philosophie</h2>
-            <p>Épure est conçue avec un principe fondamental : <strong style="color: var(--white);">vos données restent les vôtres</strong>. L'extension fonctionne entièrement en local sur votre navigateur. Aucune donnée n'est collectée, transmise ou stockée sur un serveur distant.</p>
-            <p>Aucun compte n'est requis. Aucune inscription. Aucun tracking. Aucune analytique.</p>
-        </div>
-
-        <div class="separator"></div>
-
-        <div class="section">
-            <div class="section-label">Données</div>
-            <h2 class="section-title">Ce que je ne collecte pas</h2>
-            <ul>
-                <li>Aucune donnée personnelle (nom, email, profil LinkedIn)</li>
-                <li>Aucun contenu de votre feed LinkedIn</li>
-                <li>Aucune information de navigation ou d'historique</li>
-                <li>Aucune métrique d'utilisation ou télémétrie</li>
-                <li>Aucun cookie tiers ou pixel de suivi</li>
-            </ul>
-        </div>
-
-        <div class="separator"></div>
-
-        <div class="section">
-            <div class="section-label">Stockage</div>
-            <h2 class="section-title">Données stockées localement</h2>
-            <p>Épure utilise exclusivement les API de stockage du navigateur pour sauvegarder vos préférences :</p>
-
-            <div class="card">
-                <div class="card-title">chrome.storage.sync</div>
-                <p>Votre configuration : filtres activés, poids, seuils, mode d'affichage, mots-clés personnalisés, liste d'auteurs de confiance. Ces données sont synchronisées entre vos appareils via votre compte Chrome, sans transiter par un serveur externe.</p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">chrome.storage.local</div>
-                <p>Compteurs de session (nombre de posts filtrés et signalés). Ces données restent strictement sur votre appareil.</p>
-            </div>
-
-            <p>Aucune de ces données ne quitte votre navigateur vers un service tiers.</p>
-        </div>
-
-        <div class="separator"></div>
-
-        <div class="section">
-            <div class="section-label">Permissions</div>
-            <h2 class="section-title">Permissions utilisées</h2>
-
-            <div class="card">
-                <div class="card-title">Accès à linkedin.com</div>
-                <p>L'extension injecte un script de contenu dans les pages LinkedIn pour analyser le feed et appliquer les traitements visuels (floutage, masquage, mise en avant). L'analyse se fait entièrement côté client, en mémoire. Aucun texte n'est envoyé à un serveur.</p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">storage</div>
-                <p>Pour sauvegarder votre configuration et vos compteurs localement.</p>
-            </div>
-
-            <div class="card">
-                <div class="card-title">commands</div>
-                <p>Pour le raccourci clavier <code>Alt+S</code> (Signal Only).</p>
+            <div class="section-label">Fonctionnement</div>
+            <div class="section-title">Comment ça marche</div>
+            <p class="section-subtitle">Épure analyse chaque post de votre feed LinkedIn en temps réel. Ce n'est pas un bloqueur — c'est un curateur.</p>
+            <div class="cards-3">
+                <div class="card">
+                    <div class="card-icon">⚖️</div>
+                    <div class="card-title">Double scoring</div>
+                    <p>Chaque post reçoit deux scores indépendants : un <strong style="color:var(--red-soft)">score bruit</strong> (0→1) et un <strong style="color:var(--yellow)">score signal</strong> (0→1). Un post peut être neutre, bruit, signal — ou les deux.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">Zone neutre</div>
+                    <p>Si un post ne déclenche ni le seuil bruit (défaut 0.6) ni le seuil signal (défaut 0.7), il reste affiché normalement. Épure ne touche que les extrêmes.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">👁️</div>
+                    <div class="card-title">3 modes d'action</div>
+                    <p><strong style="color:var(--white)">Flouter</strong> — voile blanc, clic pour révéler. <strong style="color:var(--white)">Masquer</strong> — hors flux. <strong style="color:var(--white)">Badge</strong> — petit indicateur discret.</p>
+                </div>
             </div>
         </div>
 
-        <div class="separator"></div>
-
+        <!-- ====== 3. LES 6 FILTRES ====== -->
         <div class="section">
-            <div class="section-label">Réseau</div>
-            <h2 class="section-title">Communications réseau</h2>
-            <p>Épure n'effectue <strong style="color: var(--white);">aucun appel réseau</strong>. Aucune requête HTTP, aucune API externe, aucun service d'analytique. L'extension fonctionne intégralement hors-ligne une fois installée.</p>
+            <div class="section-label">Analyse</div>
+            <div class="section-title">Les 6 filtres bruit</div>
+            <p class="section-subtitle">Chaque filtre est bilingue (FR + EN), activable individuellement, avec un poids configurable.</p>
+            <div class="filters-grid">
+                <div class="filter-card">
+                    <div><span class="filter-dot" style="background:var(--yellow)"></span><span class="filter-name">Contenu générique</span></div>
+                    <p class="filter-desc">Détecte les expressions template : "game-changer", "voici la vérité", listes numérotées + CTA, formules récap.</p>
+                </div>
+                <div class="filter-card">
+                    <div><span class="filter-dot" style="background:#a78bfa"></span><span class="filter-name">Style haché (broetry)</span></div>
+                    <p class="filter-desc">Repère le style une-phrase-par-ligne avec accroches courtes, flèches ↓👇, et paragraphes mono-phrase en cascade.</p>
+                </div>
+                <div class="filter-card">
+                    <div><span class="filter-dot" style="background:#f87171"></span><span class="filter-name">Piège à likes</span></div>
+                    <p class="filter-desc">Identifie les "like si tu es d'accord", "commentez OUI", sondages artificiels, urgence FOMO.</p>
+                </div>
+                <div class="filter-card">
+                    <div><span class="filter-dot" style="background:#60a5fa"></span><span class="filter-name">Fausse modestie</span></div>
+                    <p class="filter-desc">Détecte le humble brag : "j'ai tout plaqué", vanity metrics, storytelling temporel forcé, déni de vantardise.</p>
+                </div>
+                <div class="filter-card">
+                    <div><span class="filter-dot" style="background:#34d399"></span><span class="filter-name">Promotion</span></div>
+                    <p class="filter-desc">Repère les lead magnets : "DM moi", "places limitées", "formation gratuite", liens + vocabulaire commercial.</p>
+                </div>
+                <div class="filter-card">
+                    <div><span class="filter-dot" style="background:var(--grey-400)"></span><span class="filter-name">Structurel</span></div>
+                    <p class="filter-desc">Hashtags excessifs (>5), emojis en surnombre (>10), posts très courts (<20 mots), activité réseau.</p>
+                </div>
+            </div>
         </div>
 
-        <div class="separator"></div>
-
+        <!-- ====== 4. PREVIEW ====== -->
         <div class="section">
-            <div class="section-label">Vos droits</div>
-            <h2 class="section-title">Contrôle total</h2>
-            <ul>
-                <li>Exportez votre configuration à tout moment depuis l'onglet Config</li>
-                <li>Réinitialisez tous vos paramètres en un clic</li>
-                <li>Désinstallez l'extension pour supprimer toutes les données associées</li>
-            </ul>
-            <p>Aucune donnée résiduelle ne persiste après la désinstallation.</p>
+            <div class="section-label">Aperçu</div>
+            <div class="section-title">En situation</div>
+            <div class="preview-grid">
+                <!-- Popup mockup — fidèle à popup.html -->
+                <div>
+                    <div class="popup-frame">
+                        <!-- Header centré avec traits -->
+                        <div class="popup-header">
+                            <div class="header-logo-row">
+                                <span class="header-trait"></span>
+                                <span class="popup-logo"><span class="accent">É</span>pure<span class="accent">.</span></span>
+                                <span class="header-trait"></span>
+                            </div>
+                            <div class="popup-baseline">Et ton feed <span class="breathe">respire</span>.</div>
+                            <div class="toggle-switch"></div>
+                        </div>
+
+                        <!-- Compteurs inline -->
+                        <div class="popup-counters">
+                            <span class="cnt-total">128 analysés</span>
+                            <span class="cnt-sep">&middot;</span>
+                            <span class="cnt-signal">✦ 12 signal</span>
+                            <span class="cnt-sep">&middot;</span>
+                            <span class="cnt-noise">47 masqués</span>
+                        </div>
+
+                        <!-- 5 onglets -->
+                        <div class="popup-tabs">
+                            <span class="popup-tab active">Filtres</span>
+                            <span class="popup-tab">Bruit</span>
+                            <span class="popup-tab">Signal</span>
+                            <span class="popup-tab">Auteurs</span>
+                            <span class="popup-tab">Config</span>
+                        </div>
+
+                        <!-- Onglet Filtres : checkbox + slider poids -->
+                        <div class="pf-legend"><span>0 — ignoré</span><span>100 — filtrage fort</span></div>
+                        <div class="popup-filters">
+                            <div class="pf-group">
+                                <div class="pf-row"><input type="checkbox" class="pf-check" checked disabled><span class="pf-name">Contenu générique</span><span class="pf-weight">80%</span></div>
+                                <input type="range" class="pf-slider" min="0" max="100" value="80" disabled>
+                            </div>
+                            <div class="pf-group">
+                                <div class="pf-row"><input type="checkbox" class="pf-check" checked disabled><span class="pf-name">Style haché</span><span class="pf-weight">70%</span></div>
+                                <input type="range" class="pf-slider" min="0" max="100" value="70" disabled>
+                            </div>
+                            <div class="pf-group">
+                                <div class="pf-row"><input type="checkbox" class="pf-check" checked disabled><span class="pf-name">Piège à likes</span><span class="pf-weight">90%</span></div>
+                                <input type="range" class="pf-slider" min="0" max="100" value="90" disabled>
+                            </div>
+                            <div class="pf-group">
+                                <div class="pf-row"><input type="checkbox" class="pf-check" checked disabled><span class="pf-name">Fausse modestie</span><span class="pf-weight">50%</span></div>
+                                <input type="range" class="pf-slider" min="0" max="100" value="50" disabled>
+                            </div>
+                            <div class="pf-group">
+                                <div class="pf-row"><input type="checkbox" class="pf-check" checked disabled><span class="pf-name">Promotion</span><span class="pf-weight">75%</span></div>
+                                <input type="range" class="pf-slider" min="0" max="100" value="75" disabled>
+                            </div>
+                            <div class="pf-group">
+                                <div class="pf-row"><input type="checkbox" class="pf-check" checked disabled><span class="pf-name">Structurel</span><span class="pf-weight">30%</span></div>
+                                <input type="range" class="pf-slider" min="0" max="100" value="30" disabled>
+                            </div>
+                        </div>
+
+                        <div class="popup-footer">
+                            <span>v1.0.0</span>
+                            <span>★ Noter Épure</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed examples -->
+                <div class="feed-area">
+                    <div class="feed-posts">
+                        <!-- Signal post -->
+                        <div class="li-post signal">
+                            <span class="signal-mark">✦</span>
+                            <div class="li-post-header"><div class="li-avatar"></div><div><div class="li-name">Alice Moreau</div><div class="li-role">Staff Engineer · Datadog</div></div></div>
+                            <div class="li-text">On a migré 340 microservices vers une architecture event-driven en 8 mois. Le throughput a augmenté de 47% et la latence P99 est passée de 1.2s à 180ms.<br><br>Le retour d'expérience complet avec les métriques avant/après.</div>
+                        </div>
+                        <!-- Blurred post -->
+                        <div class="li-post blurred">
+                            <div class="li-post-header"><div class="li-avatar"></div><div><div class="li-name">Jean-Pierre Dupont</div><div class="li-role">Serial Entrepreneur · Top Voice</div></div></div>
+                            <div class="li-text">Il y a 3 ans, j'étais au fond du trou. Aujourd'hui, je dirige une équipe de 50 personnes. Voici les 5 leçons que personne ne vous dira…</div>
+                            <div class="blur-bar">
+                                <span class="blur-text">Masqué (réglage)</span>
+                                <div class="blur-btns">
+                                    <button class="blur-btn">Toujours afficher</button>
+                                    <button class="blur-btn pri">Afficher</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Badge post -->
+                        <div class="li-post">
+                            <div class="li-post-header"><div class="li-avatar"></div><div><div class="li-name">Marie Martin</div><div class="li-role">Coach Leadership</div></div></div>
+                            <div class="li-text">In today's fast-paced world, it's not about working harder. It's about working smarter. Here's the thing…</div>
+                            <div class="badge-li">Masqué (réglage)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="separator"></div>
-
+        <!-- ====== 5. VIE PRIVÉE ====== -->
         <div class="section">
-            <div class="section-label">Contact</div>
-            <h2 class="section-title">Questions</h2>
-            <p>Pour toute question relative à cette politique de confidentialité, vous pouvez me contacter via le dépôt GitHub du projet.</p>
+            <div class="section-label">Vie privée</div>
+            <div class="section-title">Vos données restent les vôtres</div>
+            <div class="cards-3">
+                <div class="card">
+                    <div class="card-icon">🔒</div>
+                    <div class="card-title">Zéro collecte</div>
+                    <p>Aucune donnée personnelle, aucun contenu de votre feed, aucune métrique d'utilisation. Rien ne quitte votre navigateur.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💾</div>
+                    <div class="card-title">Tout local</div>
+                    <p>Configuration dans <code style="font-size:0.75rem;background:var(--grey-900);padding:1px 5px;border-radius:3px;color:var(--grey-300)">chrome.storage</code>. Compteurs de session en local. Aucun serveur distant.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🌐</div>
+                    <div class="card-title">Aucun appel réseau</div>
+                    <p>Zéro requête HTTP. Pas d'API externe, pas d'analytique, pas de CDN. L'extension fonctionne 100% hors-ligne.</p>
+                </div>
+            </div>
+            <p style="text-align:center; margin-top:20px; font-size:0.78rem;">
+                <a href="privacy.html" style="color:var(--yellow); text-decoration:none;">Lire la politique de confidentialité complète →</a>
+            </p>
+        </div>
+
+        <!-- ====== 6. OPEN SOURCE ====== -->
+        <div class="section">
+            <div class="section-label">Transparence</div>
+            <div class="section-title">Open source</div>
+            <div class="cards-2">
+                <div class="card">
+                    <div class="card-title">GPL v3</div>
+                    <p>Le code source est publié sous licence GNU GPL v3. Vous pouvez lire, modifier et redistribuer le code librement.</p>
+                </div>
+                <div class="card">
+                    <div class="card-title">Contribuer</div>
+                    <p>Proposez vos propres mots-clés de détection via le fichier <code style="font-size:0.75rem;background:var(--grey-900);padding:1px 5px;border-radius:3px;color:var(--grey-300)">community-dict.js</code>. Ouvrez une PR sur GitHub — chaque contribution est la bienvenue.</p>
+                </div>
+            </div>
+            <p style="text-align:center; margin-top:20px;">
+                <a href="https://github.com/Tioneb12/epure" class="btn btn-secondary" style="display:inline-flex;">Voir sur GitHub</a>
+            </p>
         </div>
 
     </div>
 
-    <!-- ====== FOOTER ====== -->
-    <div class="page-footer">
-    </div>
+    <!-- ====== 7. FINAL CTA ====== -->
+    <section class="final-cta">
+        <div class="final-cta-label">Prêt&nbsp;?</div>
+        <h2 class="final-cta-title">Et ton feed <span class="breathe accent">respire</span>.</h2>
+        <p class="final-cta-sub">Installe Épure en deux clics. Reprends le contrôle de ton fil LinkedIn, sans rien partager, sans rien envoyer.</p>
+        <div class="final-cta-buttons">
+            <a href="https://chrome.google.com/webstore" class="btn btn-primary">Installer sur Chrome</a>
+            <a href="https://github.com/Tioneb12/epure" class="btn btn-secondary">Voir le code source</a>
+        </div>
+    </section>
+
+    <!-- ====== 8. CRÉDITS ====== -->
+    <section class="credits-section">
+        <div class="credits-label">Derrière le projet</div>
+        <h2 class="credits-title">Une idée à deux</h2>
+        <p class="credits-tagline">Un projet né d'une envie commune&nbsp;: rendre LinkedIn plus respirable, sans rien casser, sans rien collecter.</p>
+        <div class="credits-people">
+            <a href="https://github.com/Tioneb12" class="credit-card" target="_blank" rel="noopener">
+                <div class="credit-avatar-wrap">
+                    <img src="https://github.com/Tioneb12.png?size=200" alt="Tioneb12" class="credit-avatar" loading="lazy">
+                </div>
+                <div class="credit-role">Une idée de</div>
+                <div class="credit-name">Tioneb12</div>
+                <div class="credit-handle">@Tioneb12</div>
+            </a>
+            <div class="credits-amp">&amp;</div>
+            <a href="https://github.com/slymb" class="credit-card" target="_blank" rel="noopener">
+                <div class="credit-avatar-wrap">
+                    <img src="https://github.com/slymb.png?size=200" alt="Slym B" class="credit-avatar" loading="lazy">
+                </div>
+                <div class="credit-role">Avec le soutien de</div>
+                <div class="credit-name">Slym B</div>
+                <div class="credit-handle">@slymb</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ====== 9. FOOTER ====== -->
+    <footer class="page-footer">
+        Épure <span class="y">·</span> Open source, sous licence GPL&nbsp;v3
+        <div class="footer-links">
+            <a href="https://github.com/Tioneb12/epure">GitHub</a>
+            <a href="privacy.html">Vie privée</a>
+            <a href="https://chrome.google.com/webstore">Chrome Web Store</a>
+            <a href="https://www.gnu.org/licenses/gpl-3.0.html">Licence GPL v3</a>
+        </div>
+    </footer>
 
 </body>
 </html>

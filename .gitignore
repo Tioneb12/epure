@@ -1,0 +1,10 @@
+.DS_Store
+.idea/
+.claude/
+CLAUDE.md
+
+# Dictionnaires privés — ne doivent JAMAIS être commités ici
+# Les stubs sont force-added (git add -f) une seule fois, puis protégés.
+# Toute modification ultérieure des *-dict.js sera ignorée par git.
+content/filters/dictionaries/*-dict.js
+!content/filters/dictionaries/community-dict.js
